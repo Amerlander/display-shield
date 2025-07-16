@@ -24,7 +24,7 @@ class ButtonMultiplexer : public CodalComponent {
 
     ButtonMultiplexer(uint16_t id)
         : latch(uBit.io.P9), 
-          clock(uBit.io.P20),
+          clock(uBit.io.A0_SDA),
           data((uBit.io.P14)) {
         this->id = id;
         this->status |= DEVICE_COMPONENT_STATUS_SYSTEM_TICK;

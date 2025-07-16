@@ -8,7 +8,7 @@
 #define CODAL_SPI NRF52SPI
 
 #define MY_PIN_BTNMX_LATCH &uBit.io.P9      // DAL.P0_9
-#define MY_PIN_BTNMX_CLOCK &uBit.io.P20     // DAL.P1_0
+#define MY_PIN_BTNMX_CLOCK &uBit.io.A0_SDA     // DAL.P1_0
 #define MY_PIN_BTNMX_DATA &uBit.io.P14      // DAL.P0_1
 
 #define MY_PIN_DISPLAY_SCK &uBit.io.P13     // DAL.P0_17
@@ -16,7 +16,7 @@
 #define MY_PIN_DISPLAY_MISO &uBit.io.P14    // DAL.P0_1
 #define MY_PIN_DISPLAY_BL &uBit.io.P19      // DAL.P0_26
 #define MY_PIN_DISPLAY_DC &uBit.io.P8       // DAL.P0_10
-#define MY_PIN_DISPLAY_RST &uBit.io.P16     // DAL.P1_2
+#define MY_PIN_DISPLAY_RST &uBit.io.A1_RX     // DAL.P1_2
 #define MY_PIN_DISPLAY_CS ((CODAL_PIN*)NULL) // not connected
 #define MY_PIN_LED  ((CODAL_PIN*)NULL)      // not connected
 
