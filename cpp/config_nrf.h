@@ -8,7 +8,7 @@
 #define CODAL_SPI NRF52SPI
 
 #define MY_PIN_BTNMX_LATCH &uBit.io.P9      // DAL.P0_9
-#define MY_PIN_BTNMX_CLOCK &uBit.io.A0_SDA     // DAL.P1_0
+#define MY_PIN_BTNMX_CLOCK &uBit.io.A0SDA     // DAL.P1_0
 #define MY_PIN_BTNMX_DATA &uBit.io.P14      // DAL.P0_1
 
 #define MY_PIN_DISPLAY_SCK &uBit.io.P13     // DAL.P0_17
