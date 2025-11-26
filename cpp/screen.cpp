@@ -49,7 +49,10 @@ public:
     smart = NULL;
 
     auto miso = LOOKUP_PIN(DISPLAY_MISO);
+    // show configs before probing/auto-detect
+    DMESG("WDisplay: pre-smartConfigure cfg0=%08x cfg1=%08x cfg2=%08x dispTp(initial)=%d", cfg0, frmctr1, cfg2, dispTp);
     dispTp = smartConfigure(&cfg0, &frmctr1, &cfg2);
+    DMESG("WDisplay: post-smartConfigure dispTp=%d cfg0=%08x cfg1=%08x cfg2=%08x", dispTp, cfg0, frmctr1, cfg2);
 
     if (dispTp != DISPLAY_TYPE_SMART)
       miso = NULL; // only JDDisplay needs MISO, otherwise leave free
@@ -120,10 +123,15 @@ public:
     uint32_t hc;
     present = false;
 
-    DMESG("74HC: waiting...");
+    // diagnostic entry log: show incoming configs (values + pointers)
+    DMESG("smartConfigure: enter cfg0=%08x cfg1=%08x cfg2=%08x (ptrs %p,%p,%p)", *cfg0, *cfg1, *cfg2, cfg0, cfg1, cfg2);
+    DMESG("74HC: waiting 1... %x", (*cfg0 & 0x02000000));
 
     // wait while nothing is connected
+    int attempts = 0;
     for (;;) {
+      ++attempts;
+      DMESG("74HC: waiting 2... %x attempt=%d", (*cfg0 & 0x02000000), attempts);
       auto rst = LOOKUP_PIN(DISPLAY_RST);
       if (rst) {
         rst->setDigitalValue(0);
@@ -133,6 +141,7 @@ public:
       }
 
       hc = readButtonMultiplexer(17);
+      DMESG("74HC: readButtonMultiplexer returned hc=%x", hc);
       if (hc != 0)
         break;
 
@@ -141,29 +150,36 @@ public:
       // the device will run without shield when the following is specified in
       // user program: namespace config { export const DISPLAY_CFG0 = 0x02000080 }
       if (*cfg0 & 0x02000000) {
-        DMESG("74HC: no wait requested");
+        DMESG("74HC: no wait requested; cfg0=%08x -> returning ST7735", *cfg0);
+        DMESG("smartConfigure: exit (no shield) cfg0=%08x cfg1=%08x cfg2=%08x", *cfg0, *cfg1, *cfg2);
         return DISPLAY_TYPE_ST7735;
       }
     }
     present = true;
 
-    DMESG("74HC: %x", hc);
+    DMESG("74HC: raw hc=%x (after %d attempts)", hc, attempts);
 
     // is the line forced up? if so, assume JDDisplay
     if (hc == 0x1FFFF) {
+      DMESG("74HC: line forced up (hc==0x1FFFF) -> JDDisplay (smart) detected");
       disableButtonMultiplexer();
+      DMESG("smartConfigure: exit -> DISPLAY_TYPE_SMART (cfg0=%08x cfg1=%08x cfg2=%08x)", *cfg0, *cfg1, *cfg2);
       return DISPLAY_TYPE_SMART;
     }
 
     hc = hc >> 1;
 
+
     // SER pin (or first bit of second HC) is orientation
+    uint32_t oldCfg0 = *cfg0;
     if (hc & 0x0010)
-      *cfg0 = ((*cfg0) & 0xffffff3f) | 0x80;
+      *cfg0 = ((*cfg0) & 0xffffff3f) | 0x80; // orientation bit set (0x80)
     else
-      *cfg0 = ((*cfg0) & 0xffffff3f) | 0x40;
+      *cfg0 = ((*cfg0) & 0xffffff3f) | 0x40; // orientation bit set to 0x40
+    DMESG("74HC: orientation bit -> hc&0x10=%s oldCfg0=%08x newCfg0=%08x", (hc & 0x0010) ? "1" : "0", oldCfg0, *cfg0);
 
     uint32_t configId = (hc & 0xe0) >> 5;
+    DMESG("74HC: interpreted configId=%d (hc bits e0=%02x) -> switching", configId, (hc & 0xe0));
 
     switch (configId) {
     case 1:
@@ -182,11 +198,12 @@ public:
       break;
     }
 
-    DMESG("config type: %d; cfg0=%x cfg1=%x", configId, *cfg0, *cfg1);
+    DMESG("config type: %d; cfg0=%08x cfg1=%08x (after switch)", configId, *cfg0, *cfg1);
 
     // for some reason, setting SPI frequency to 32 doesn't
     // work with ST77735 in pxt-microbit
-    *cfg2 = 16; // Damn the torpedoes! 32MHz
+    *cfg2 = 16; // force 16MHz as default for stability
+    DMESG("smartConfigure: final cfg0=%08x cfg1=%08x cfg2=%08x -> returning ST7735", *cfg0, *cfg1, *cfg2);
 
     return DISPLAY_TYPE_ST7735;
   }
