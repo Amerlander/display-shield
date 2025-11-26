@@ -7,18 +7,18 @@ a Bitmap abstraction with numerous drawing primitives
 Bitmaps also can be created using the built-in
 image editor in MakeCode.
 
-> **NOTE: This extension will only work in https://makecode.microbit.org/beta**. The extension is still under development and is subject to changes. Please file issues at https://github.com/microbit-apps/display-shield/issues 
-
 ## Arcade shields for the micro:bit V2
 
-Various Arcade (display) shields for the micro:bit V2 are available on the market today, including:
+Five Arcade (display) shields for the micro:bit V2 are available on the market today, including:
 
 * [Kittenbot's newbit Arcade shield](https://www.kittenbot.cc/products/newbit-arcade-shield): No assembly required Small screen and nice enclosure with LiPo battery inside. One [Jacdac](https://aka.ms/jacdac) port.
-* [ELECFREAK's micro:bit Arcade shield](https://www.kittenbot.cc/products/newbit-arcade-shield): Assembly required. Small screen. AAA Battery pack on back. One [Jacdac](https://aka.ms/jacdac) port.
 * [ICShopping's Game:bit Arcade shield](https://www.icshop.com.tw/products/368112100137?locale=en): No assembly required. Large screen and 3d-printed enclosure with LiPo battery inside. Two [Jacdac](https://aka.ms/jacdac) ports.
+* [ELECFREAK's micro:bit Arcade shield](https://shop.elecfreaks.com/products/micro-bit-retro-programming-arcade): Assembly required. Small screen. AAA Battery pack on back. One [Jacdac](https://aka.ms/jacdac) port.
+* [Forward Education's CodeCTRL shield](https://forwardedu.com/pages/codectrl-for-micro-bit): No assembly required. Large screen and 3-d printed enclosure with LiPo battery inside. Two [Jacdac](https://aka.ms/jacdac) ports.
 * [Kitronik's Arcade for BBC micro:bit](https://kitronik.co.uk/products/56116-kitronik-arcade-for-bbc-micro-bit-makecode-arcade): No assembly required. Small screen. Battery holder on back. No Jacdac port.
 
 ![MakeCode Arcade shields](https://github.com/microbit-apps/display-shield/blob/master/assets/shields.png?raw=true)
+![more MakeCode Arcade shields](https://github.com/microbit-apps/display-shield/blob/master/assets/shields2.png?raw=true)
 
 
 ## Simulator support
@@ -32,15 +32,15 @@ for the shield are under the toolbox categories `Controller` and
 
 ![MakeCode with Display Shield Simulator](https://github.com/microbit-apps/display-shield/blob/master/assets/shieldSim.png?raw=true)
 
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S80683-78265-58968-34229)
+> [Open in MakeCode](https://makecode.microbit.org/#pub:S80683-78265-58968-34229)
 
 
 ## Using this extension
 
--  Open https://makecode.microbit.org/beta 
+-  Open https://makecode.microbit.org/
 -  Create a new project
 -  Add an extension via the "Extensions" item in the gear wheel (upper right)
--  Type "display shield" into the search box
+-  Click the "Lights and Display" button, as shown below
 -  Select the **display-shield** extension, as shown below
 
 ![MakeCode extension dialog](https://github.com/microbit-apps/display-shield/blob/master/assets/extensions.png?raw=true)
@@ -48,7 +48,7 @@ for the shield are under the toolbox categories `Controller` and
 ## Mashup!!!
 
 With this extension, you have access to **all** the MakeCode APIs for the micro:bit, and the new ability to plot data or create your own user interface. For example, one very cool thing about the micro:bit is its (X,Y,Z) accelerometer, which senses motion in three dimensions.  Below is a program that maps the three accelerometer values to a scrolling line graph:
-```block
+```blocks
 let x = 0, old_x = 0
 let y = 0, old_y = 0
 let z = 0, old_z = 0
@@ -71,11 +71,9 @@ basic.forever(function () {
 })
 ```
 
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S82867-73191-89330-76938)
-
 ## Tutorials
 
--   [Getting started](https://makecode.microbit.org/beta#tutorial:github:microbit-apps/display-shield/tutorials/getting-started)
+-   [Getting started](https://makecode.microbit.org/#tutorial:github:microbit-apps/display-shield/tutorials/getting-started)
 
 ## Overview of API
 
@@ -89,7 +87,7 @@ The controller API has event handlers for the A,B and four directions
 on the D-pad, as well as the menu button. There also are functions
 for polling the buttons. Some example code:
 
-```block
+```blocks
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     screen().fill(Math.randomRange(1,14))
 })
@@ -97,8 +95,6 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     screen().fill(15)
 })
 ```
-
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S64613-82831-68506-89974)
 
 ### Drawing into the screen bitmap
 
@@ -109,12 +105,11 @@ The upper left of the screen is coordinate (0,0); The lower
 right of the screen is coordinate (159,119).  We draw two lines 
 to the screen bitmap to show the four corners of the screen:
 
-```block
+```blocks
 screen().fill(8)
 screen().drawLine(0, 0, 159, 119, 2)
 screen().drawLine(159, 0, 0, 119, 5)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S96327-83750-33845-21213)
 
 The first two parameters to the function are the (x,y)
 coordinate where the line should start, while the next
@@ -148,19 +143,17 @@ Since the width and height of the screen are both even, the center of
 the screen is bounded by these four pixels, as shown by the following
 four commands that each draw a single pixel:
 
-```block
+```blocks
 screen().setPixel(79, 59, 1)
 screen().setPixel(80, 59, 1)
 screen().setPixel(79, 60, 1)
 screen().setPixel(80, 60, 1)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S39837-99945-78225-07627)
-
 
 You can pass floating point numbers to any drawing command that takes 
 a coordinate. For efficiency, the underlying representation is fixed point 
 in the MakeCode runtime. Fractional values are ignored when setting a pixel in a bitmap, so
-```block
+```blocks
 screen().setPixel(79.6, 59.6, 1)
 ```
 has the same effect as 
@@ -175,11 +168,10 @@ screen().setPixel(79, 59, 1)
 
 The following code will show a 2 on the micro:bit screen, as this is the color index 
 stored in the pixel:
-```block
+```blocks
 screen().setPixel(80, 60, 2)
 basic.showNumber(screen().getPixel(80, 60))
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S94864-19590-01546-54083)
 
 So we can see that each pixel is like a variable that stores a value (in the range 0-15)
 that can later be retrieved.
@@ -191,32 +183,29 @@ corner with the first two parameters to the `drawRect`
 function, followed by the width and the height of the
 rectangle, and ending with the draw color:
 
-```block
+```blocks
 screen().drawRect(0, 0, 10, 10, 1)
 screen().drawRect(10, 10, 20, 20, 2)
 screen().drawRect(0, 10, 10, 20, 3)
 screen().drawRect(10, 0, 20, 10, 4)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S56084-26336-76246-44233)
 
 You can have the rectangle filled with the specified color instead:
-```block
+```blocks
 screen().fillRect(0, 0, 10, 10, 1)
 screen().fillRect(10, 10, 20, 20, 2)
 screen().fillRect(0, 10, 10, 20, 3)
 screen().fillRect(10, 0, 20, 10, 4)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S26194-20440-49967-42648)
 
 To draw a circle, first specify the coordinate
 of the center of the circle, followed by the radius
 of the circle and the draw color. Again, you can choose
 to fill the circle or just draw its outline:
-```block
+```blocks
 screen().fillCircle(10, 10, 8, 2)
 screen().drawCircle(10, 10, 8, 5)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S07238-98044-95681-08339)
 
 ### Bitmap
 
@@ -228,7 +217,7 @@ The easiest way to create a bitmap is with the bitmap editor,
 which is accessible both from blocks and text view.  Here is the block view of an 
 16x16 bitmap of an apple:
 
-```block
+```blocks
 screen().fill(6)
 let apple = bmp`
     . . . . . . . e c 7 . . . . . . 
@@ -250,7 +239,6 @@ let apple = bmp`
     `
 screen().drawTransparentBitmap(apple, 70, 50)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S09276-36456-18209-30086)
 
 Here is the bitmap editor, which appears when you click on the icon in bitmap block
 
@@ -391,7 +379,7 @@ c d e f
 let larger4x = allColors.doubled().doubled()
 screen().drawBitmap(larger4x, 0, 0)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S45330-31711-15419-66725)
+> [Open in MakeCode](https://makecode.microbit.org/#pub:S45330-31711-15419-66725)
 
 #### Transparency and overlap
 
@@ -456,7 +444,7 @@ let yellowSquare = bmp`
 screen().drawBitmap(yellowSquare, 0, 0)
 screen().drawTransparentBitmap(greenBall, 0, 0)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S62195-40202-75476-02422)
+> [Open in MakeCode](https://makecode.microbit.org/#pub:S62195-40202-75476-02422)
 
 #### Setting pixels at locations
 
@@ -474,12 +462,12 @@ screen().fill(8)
 screen().drawTransparentBitmap(orangeBox, 0, 0)
 screen().drawTransparentBitmap(orangeBox, 32, 32)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S25149-03569-03166-64971)
+> [Open in MakeCode](https://makecode.microbit.org/#pub:S25149-03569-03166-64971)
 
 #### Drawing to a bitmap
 
 All the functions we previously reviewed for drawing to the
-screen can also be applied to a bitmap. For example, the orange border in a bitmap can be created as followsL
+screen can also be applied to a bitmap. For example, the orange border in a bitmap can be created as follows:
 
 ```block
 let orangeBox = bitmaps.create(32, 32)
@@ -491,7 +479,7 @@ screen().fill(8)
 screen().drawTransparentBitmap(orangeBox, 0, 0)
 screen().drawTransparentBitmap(orangeBox, 32, 32)
 ```
-> [Open in MakeCode](https://makecode.microbit.org/beta/#pub:S62672-77446-94897-23460)
+> [Open in MakeCode](https://makecode.microbit.org/#pub:S62672-77446-94897-23460)
 
 
 # Supported targets
