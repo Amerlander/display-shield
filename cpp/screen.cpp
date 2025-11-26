@@ -149,11 +149,11 @@ public:
 
       // the device will run without shield when the following is specified in
       // user program: namespace config { export const DISPLAY_CFG0 = 0x02000080 }
-      if (*cfg0 & 0x02000000) {
-        DMESG("74HC: no wait requested; cfg0=%08x -> returning ST7735", *cfg0);
-        DMESG("smartConfigure: exit (no shield) cfg0=%08x cfg1=%08x cfg2=%08x", *cfg0, *cfg1, *cfg2);
-        return DISPLAY_TYPE_ST7735;
-      }
+      // if (*cfg0 & 0x02000000) {
+      //   DMESG("74HC: no wait requested; cfg0=%08x -> returning ST7735", *cfg0);
+      //   DMESG("smartConfigure: exit (no shield) cfg0=%08x cfg1=%08x cfg2=%08x", *cfg0, *cfg1, *cfg2);
+      //   return DISPLAY_TYPE_ST7735;
+      // }
     }
     present = true;
 
