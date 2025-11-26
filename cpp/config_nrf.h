@@ -14,9 +14,9 @@
 #define MY_PIN_DISPLAY_SCK &uBit.io.P13     // DAL.P0_17
 #define MY_PIN_DISPLAY_MOSI &uBit.io.P15    // DAL.P0_13
 #define MY_PIN_DISPLAY_MISO &uBit.io.P14    // DAL.P0_1
-#define MY_PIN_DISPLAY_BL &uBit.io.P19      // DAL.P0_26
+#define MY_PIN_DISPLAY_BL &uBit.io.A0SCL      // DAL.P0_26
 #define MY_PIN_DISPLAY_DC &uBit.io.P8       // DAL.P0_10
-#define MY_PIN_DISPLAY_RST &uBit.io.A1_RX     // DAL.P1_2
+#define MY_PIN_DISPLAY_RST &uBit.io.A1RX     // DAL.P1_2
 #define MY_PIN_DISPLAY_CS ((CODAL_PIN*)NULL) // not connected
 #define MY_PIN_LED  ((CODAL_PIN*)NULL)      // not connected
 
