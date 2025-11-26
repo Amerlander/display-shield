@@ -36,9 +36,12 @@ class ButtonMultiplexer : public CodalComponent {
         memset(buttonIdPerBit, 0, sizeof(buttonIdPerBit));
 
         data.setPull(PullMode::Down);
+        // read once to stabilize the input/pull
         data.getDigitalValue();
         latch.setDigitalValue(1);
         clock.setDigitalValue(1);
+
+        DMESG("ButtonMultiplexer: init latch=%d clock=%d data=%d", latch.getDigitalValue(), clock.getDigitalValue(), data.getDigitalValue());
     }
 
     void disable() {
@@ -57,6 +60,7 @@ class ButtonMultiplexer : public CodalComponent {
     }
 
     uint32_t readBits(int bits) {
+        // normal 74HC165 parallel-load sequence: /PL low->high to latch inputs
         latch.setDigitalValue(0);
         waitABit();
         latch.setDigitalValue(1);
@@ -73,6 +77,10 @@ class ButtonMultiplexer : public CodalComponent {
             clock.setDigitalValue(1);
             waitABit();
         }
+
+        // print diagnostic only when reading non-8-bit (eg. probe for config) or if we read a suspicious value
+        if (bits != 8 || state == 0)
+            DMESG("ButtonMultiplexer::readBits(bits=%d) -> 0x%08x", bits, state);
 
         return state;
     }
@@ -131,10 +139,33 @@ int multiplexedButtonIsPressed(int btnId) {
 }
 
 uint32_t readButtonMultiplexer(int bits) {
-    return getMultiplexer()->readBits(bits);
+    // Attempt a few reads to make detection a bit more robust on soft resets.
+    // Smart/shield probing uses 17 bits; if the chain is not ready on the
+    // first try, a small retry with a short sleep and some pin toggles can
+    // sometimes help recover without requiring a full power cycle.
+    const int MAX_ATTEMPTS = 5;
+    uint32_t r = 0;
+    for (int attempt = 1; attempt <= MAX_ATTEMPTS; ++attempt) {
+        r = getMultiplexer()->readBits(bits);
+        DMESG("readButtonMultiplexer: attempt=%d bits=%d -> 0x%08x", attempt, bits, r);
+        if (r != 0)
+            return r;
+
+        // try to nudge the shift register into a sane state: ensure outputs
+        // are set to known values and wait a little before retrying.
+        auto m = getMultiplexer();
+        m->latch.setDigitalValue(1);
+        m->clock.setDigitalValue(1);
+        // small backoff; keep tiny so periodic reads aren't slowed too much
+        fiber_sleep(10 * attempt);
+    }
+
+    DMESG("readButtonMultiplexer: all attempts returned zero for bits=%d (final=0x%08x)", bits, r);
+    return r;
 }
 
 void disableButtonMultiplexer() {
+    DMESG("disableButtonMultiplexer: disabling multiplexer");
     getMultiplexer()->disable();
 }
 
